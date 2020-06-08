@@ -27,8 +27,10 @@ public class SegmentedGroup extends RadioGroup {
     private int mMarginDp;
     private Resources resources;
     private int mTintColor;
+    private int mBorderColor;
     private int mUnCheckedTintColor;
     private int mCheckedTextColor = Color.WHITE;
+    private int mUncheckedTextColor = Color.WHITE;
     private LayoutSelector mLayoutSelector;
     private Float mCornerRadius;
     private OnCheckedChangeListener mCheckedChangeListener;
@@ -39,6 +41,7 @@ public class SegmentedGroup extends RadioGroup {
         super(context);
         resources = getResources();
         mTintColor = resources.getColor(R.color.radio_button_selected_color);
+        mBorderColor = resources.getColor(R.color.radio_button_selected_color);
         mUnCheckedTintColor = resources.getColor(R.color.radio_button_unselected_color);
         mMarginDp = (int) getResources().getDimension(R.dimen.radio_button_stroke_border);
         mCornerRadius = getResources().getDimension(R.dimen.radio_button_conner_radius);
@@ -49,6 +52,7 @@ public class SegmentedGroup extends RadioGroup {
         super(context, attrs);
         resources = getResources();
         mTintColor = resources.getColor(R.color.radio_button_selected_color);
+        mBorderColor = resources.getColor(R.color.radio_button_selected_color);
         mUnCheckedTintColor = resources.getColor(R.color.radio_button_unselected_color);
         mMarginDp = (int) getResources().getDimension(R.dimen.radio_button_stroke_border);
         mCornerRadius = getResources().getDimension(R.dimen.radio_button_conner_radius);
@@ -76,8 +80,16 @@ public class SegmentedGroup extends RadioGroup {
                     R.styleable.SegmentedGroup_sc_tint_color,
                     getResources().getColor(R.color.radio_button_selected_color));
 
+            mBorderColor = typedArray.getColor(
+                    R.styleable.SegmentedGroup_sc_border_color,
+                    getResources().getColor(R.color.radio_button_selected_color));
+
             mCheckedTextColor = typedArray.getColor(
                     R.styleable.SegmentedGroup_sc_checked_text_color,
+                    getResources().getColor(android.R.color.white));
+
+            mUncheckedTextColor = typedArray.getColor(
+                    R.styleable.SegmentedGroup_sc_unchecked_text_color,
                     getResources().getColor(android.R.color.white));
 
             mUnCheckedTintColor = typedArray.getColor(
@@ -140,22 +152,22 @@ public class SegmentedGroup extends RadioGroup {
         ColorStateList colorStateList = new ColorStateList(new int[][]{
                 {-android.R.attr.state_checked},
                 {android.R.attr.state_checked}},
-                new int[]{mTintColor, mCheckedTextColor});
+                new int[]{mUncheckedTextColor, mCheckedTextColor});
         ((Button) view).setTextColor(colorStateList);
 
         //Redraw with tint color
         Drawable checkedDrawable = resources.getDrawable(checked).mutate();
         Drawable uncheckedDrawable = resources.getDrawable(unchecked).mutate();
         ((GradientDrawable) checkedDrawable).setColor(mTintColor);
-        ((GradientDrawable) checkedDrawable).setStroke(mMarginDp, mTintColor);
-        ((GradientDrawable) uncheckedDrawable).setStroke(mMarginDp, mTintColor);
+        ((GradientDrawable) checkedDrawable).setStroke(mMarginDp, mBorderColor);
+        ((GradientDrawable) uncheckedDrawable).setStroke(mMarginDp, mBorderColor);
         ((GradientDrawable) uncheckedDrawable).setColor(mUnCheckedTintColor);
         //Set proper radius
         ((GradientDrawable) checkedDrawable).setCornerRadii(mLayoutSelector.getChildRadii(view));
         ((GradientDrawable) uncheckedDrawable).setCornerRadii(mLayoutSelector.getChildRadii(view));
 
         GradientDrawable maskDrawable = (GradientDrawable) resources.getDrawable(unchecked).mutate();
-        maskDrawable.setStroke(mMarginDp, mTintColor);
+        maskDrawable.setStroke(mMarginDp, mBorderColor);
         maskDrawable.setColor(mUnCheckedTintColor);
         maskDrawable.setCornerRadii(mLayoutSelector.getChildRadii(view));
         int maskColor = Color.argb(50, Color.red(mTintColor), Color.green(mTintColor), Color.blue(mTintColor));
